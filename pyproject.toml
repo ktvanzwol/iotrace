@@ -1,6 +1,6 @@
 [project]
 name = "iotrace"
-version = "0.1.0"
+version = "0.1.1"
 description = "Python wrapper for NI IO Trace programmatic C API"
 readme = "README.md"
 authors = [
