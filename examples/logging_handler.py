@@ -1,13 +1,13 @@
 """Forward Python logging to NI IO Trace.
 
-Demonstrates using nitrace.logging.IOTraceHandler to include Python log
+Demonstrates using iotrace.logging.IOTraceHandler to include Python log
 entries in the IO Trace log alongside NI driver calls.
 """
 
 import logging
 
-import nitrace
-from nitrace.logging import IOTraceHandler
+import iotrace
+from iotrace.logging import IOTraceHandler
 
 logger = logging.getLogger("my_app")
 
@@ -32,8 +32,8 @@ def configure_logger():
 
 def main() -> None:
     # Launch IO Trace and start tracing
-    nitrace.launch_io_trace()
-    nitrace.start_tracing()
+    iotrace.launch_io_trace()
+    iotrace.start_tracing()
 
     # Log messages now appear in the IO Trace log
     logger.info("Starting measurement")
@@ -45,7 +45,7 @@ def main() -> None:
     logger.debug("This debug message will not appear in IO Trace due to handler log level")
 
     # Stop logging and leave IO Trace running to inspect the log
-    nitrace.stop_tracing()
+    iotrace.stop_tracing()
 
 
 if __name__ == "__main__":

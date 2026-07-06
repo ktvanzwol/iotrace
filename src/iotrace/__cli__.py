@@ -1,12 +1,12 @@
 import argparse
 import sys
 
-import nitrace
+import iotrace
 
 
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(
-        prog="nitrace",
+        prog="iotrace",
         description="Control NI IO Trace from the command line.",
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -43,20 +43,20 @@ def main(argv: list[str] | None = None) -> None:
 
     try:
         if args.command == "start":
-            nitrace.launch_io_trace(window_state=nitrace.WindowState.MINIMIZED)
+            iotrace.launch_io_trace(window_state=iotrace.WindowState.MINIMIZED)
             log_format_map = {
-                "none": nitrace.LogFileSetting.NO_FILE,
-                "io-trace": nitrace.LogFileSetting.IO_TRACE,
-                "plain-text": nitrace.LogFileSetting.PLAIN_TEXT,
-                "csv": nitrace.LogFileSetting.COMMA_SEPARATED,
-                "xml": nitrace.LogFileSetting.XML,
+                "none": iotrace.LogFileSetting.NO_FILE,
+                "io-trace": iotrace.LogFileSetting.IO_TRACE,
+                "plain-text": iotrace.LogFileSetting.PLAIN_TEXT,
+                "csv": iotrace.LogFileSetting.COMMA_SEPARATED,
+                "xml": iotrace.LogFileSetting.XML,
             }
             write_mode_map = {
-                "create": nitrace.FileWriteMode.CREATE_ONLY,
-                "append": nitrace.FileWriteMode.CREATE_OR_APPEND,
-                "overwrite": nitrace.FileWriteMode.CREATE_OR_OVERWRITE,
+                "create": iotrace.FileWriteMode.CREATE_ONLY,
+                "append": iotrace.FileWriteMode.CREATE_OR_APPEND,
+                "overwrite": iotrace.FileWriteMode.CREATE_OR_OVERWRITE,
             }
-            nitrace.start_tracing(
+            iotrace.start_tracing(
                 log_file_setting=log_format_map[args.log_format],
                 file_path=args.file,
                 file_write_mode=write_mode_map[args.write_mode],
@@ -64,12 +64,12 @@ def main(argv: list[str] | None = None) -> None:
             print("Tracing started.")
 
         elif args.command == "stop":
-            nitrace.stop_tracing()
+            iotrace.stop_tracing()
             print("Tracing stopped.")
             if args.close:
-                nitrace.close_io_trace()
+                iotrace.close_io_trace()
                 print("NI IO Trace closed.")
 
-    except nitrace.NiTraceError as exc:
+    except iotrace.IOTraceError as exc:
         print(f"Error: {exc}", file=sys.stderr)
         sys.exit(1)

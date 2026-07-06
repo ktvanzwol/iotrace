@@ -2,11 +2,11 @@ from pathlib import Path
 
 import pytest
 
-import nitrace
-from nitrace import (
+import iotrace
+from iotrace import (
     FileWriteMode,
+    IOTraceError,
     LogFileSetting,
-    NiTraceError,
     StatusCode,
 )
 
@@ -17,23 +17,23 @@ pytestmark = pytest.mark.system
 def _ensure_closed():
     """Guarantee IO Trace is not running and shut down after each test."""
     try:
-        nitrace.close_io_trace()
-    except NiTraceError:
+        iotrace.close_io_trace()
+    except IOTraceError:
         pass
     yield
     try:
-        nitrace.stop_tracing()
-    except NiTraceError:
+        iotrace.stop_tracing()
+    except IOTraceError:
         pass
     try:
-        nitrace.close_io_trace()
-    except NiTraceError:
+        iotrace.close_io_trace()
+    except IOTraceError:
         pass
 
 
 class TestGetApplicationPath:
     def test_returns_existing_executable(self):
-        result = nitrace.get_application_path()
+        result = iotrace.get_application_path()
         assert isinstance(result, Path)
         assert result.exists()
         assert result.suffix.lower() == ".exe"
@@ -41,27 +41,27 @@ class TestGetApplicationPath:
 
 class TestTracingLifecycle:
     def test_start_stop_close(self, _ensure_closed):
-        nitrace.launch_io_trace()
+        iotrace.launch_io_trace()
 
-        nitrace.start_tracing()
-        nitrace.stop_tracing()
-        nitrace.close_io_trace()
+        iotrace.start_tracing()
+        iotrace.stop_tracing()
+        iotrace.close_io_trace()
 
     def test_log_message_written_to_file(self, _ensure_closed, tmp_path):
         log_file = tmp_path / "trace.txt"
 
-        nitrace.launch_io_trace()
+        iotrace.launch_io_trace()
 
-        nitrace.start_tracing(
+        iotrace.start_tracing(
             log_file_setting=LogFileSetting.PLAIN_TEXT,
             file_path=log_file,
             file_write_mode=FileWriteMode.CREATE_OR_OVERWRITE,
         )
 
-        marker = "nitrace-test-marker"
-        nitrace.log_message(marker)
-        nitrace.stop_tracing()
-        nitrace.close_io_trace()
+        marker = "iotrace-test-marker"
+        iotrace.log_message(marker)
+        iotrace.stop_tracing()
+        iotrace.close_io_trace()
 
         contents = log_file.read_text(encoding="utf-8", errors="replace")
         assert marker in contents
@@ -70,10 +70,10 @@ class TestTracingLifecycle:
         log_file = tmp_path / "trace.txt"
         log_file.write_text("existing")
 
-        nitrace.launch_io_trace()
+        iotrace.launch_io_trace()
 
-        with pytest.raises(NiTraceError) as exc_info:
-            nitrace.start_tracing(
+        with pytest.raises(IOTraceError) as exc_info:
+            iotrace.start_tracing(
                 log_file_setting=LogFileSetting.PLAIN_TEXT,
                 file_path=log_file,
                 file_write_mode=FileWriteMode.CREATE_ONLY,
@@ -83,10 +83,10 @@ class TestTracingLifecycle:
     def test_rejects_invalid_file(self, _ensure_closed):
         log_file = "none_existing.txt"
 
-        nitrace.launch_io_trace()
+        iotrace.launch_io_trace()
 
-        with pytest.raises(NiTraceError) as exc_info:
-            nitrace.start_tracing(
+        with pytest.raises(IOTraceError) as exc_info:
+            iotrace.start_tracing(
                 log_file_setting=LogFileSetting.PLAIN_TEXT,
                 file_path=log_file,
                 file_write_mode=FileWriteMode.CREATE_ONLY,
