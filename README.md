@@ -14,13 +14,13 @@ A Python library for controlling [NI IO Trace](https://www.ni.com/docs/en-US/bun
 Install from PyPI:
 
 ```
-pip install nitrace
+pip install iotrace
 ```
 
 Or with [uv](https://docs.astral.sh/uv/):
 
 ```
-uv add nitrace
+uv add iotrace
 ```
 
 Or install directly from GitHub:
@@ -34,25 +34,25 @@ pip install git+https://github.com/ktvanzwol/nitrace.git
 ```python
 from pathlib import Path
 
-import nitrace
+import iotrace
 
 # Launch the application (minimized by default)
-nitrace.launch_io_trace()
+iotrace.launch_io_trace()
 
 # Start tracing to a NI IO Trace log file
-nitrace.start_tracing(
-    log_file_setting=nitrace.LogFileSetting.IO_TRACE,
+iotrace.start_tracing(
+    log_file_setting=iotrace.LogFileSetting.IO_TRACE,
     file_path=Path.cwd() / "trace.nitrace",
-    file_write_mode=nitrace.FileWriteMode.CREATE_OR_OVERWRITE,
+    file_write_mode=iotrace.FileWriteMode.CREATE_OR_OVERWRITE,
 )
 
 # Insert a marker into the trace log
-nitrace.log_message("Test started")
+iotrace.log_message("Test started")
 
 # ... run your NI driver calls ...
 
 # Stop tracing and leave the application running to inspect the log.
-nitrace.stop_tracing()
+iotrace.stop_tracing()
 
 print("Trace complete. Log file saved to:", Path.cwd() / "trace.nitrace")
 ```
@@ -63,13 +63,13 @@ A command-line interface is included:
 
 ```
 # Launch IO Trace and start tracing to a CSV file
-nitrace start --log-format csv --file trace.csv --write-mode overwrite
+iotrace start --log-format csv --file trace.csv --write-mode overwrite
 
 # Stop tracing and close the application
-nitrace stop --close
+iotrace stop --close
 ```
 
-### `nitrace start`
+### `iotrace start`
 
 | Option | Description |
 |---|---|
@@ -77,7 +77,7 @@ nitrace stop --close
 | `--file` | Path to the log file. |
 | `--write-mode` | File write mode: `create`, `append`, `overwrite` (default: `create`). |
 
-### `nitrace stop`
+### `iotrace stop`
 
 | Option | Description |
 |---|---|
@@ -100,7 +100,7 @@ nitrace stop --close
   - [`WindowState`](#windowstate)
   - [`StatusCode`](#statuscode)
 - **Exceptions:**
-  - [`NiTraceError`](#nitraceerror)
+  - [`IOTraceError`](#iotraceerror)
 
 ### Functions
 
@@ -108,7 +108,7 @@ nitrace stop --close
 
 Return the filesystem path to the NI IO Trace executable.
 
-**Raises:** `NiTraceError` if NI IO Trace is not installed.
+**Raises:** `IOTraceError` if NI IO Trace is not installed.
 
 ---
 
@@ -120,7 +120,7 @@ Launch the NI IO Trace application and return the process handle. The applicatio
 |---|---|---|---|
 | `window_state` | `WindowState` | `MINIMIZED` | Initial window state of the application. |
 
-**Raises:** `RuntimeError` if the process exits immediately. `NiTraceError` if the application path cannot be resolved.
+**Raises:** `RuntimeError` if the process exits immediately. `IOTraceError` if the application path cannot be resolved.
 
 ---
 
@@ -134,7 +134,7 @@ Start tracing NI driver calls. NI IO Trace must already be running.
 | `file_path` | `str \| Path \| None` | `None` | Path to the log file. Required when `log_file_setting` is not `NO_FILE`. |
 | `file_write_mode` | `FileWriteMode` | `CREATE_ONLY` | How to handle an existing file. |
 
-**Raises:** `NiTraceError` if IO Trace is not running, the file already exists with `CREATE_ONLY`, or the settings are invalid.
+**Raises:** `IOTraceError` if IO Trace is not running, the file already exists with `CREATE_ONLY`, or the settings are invalid.
 
 ---
 
@@ -142,7 +142,7 @@ Start tracing NI driver calls. NI IO Trace must already be running.
 
 Stop tracing NI driver calls. The application remains open and tracing can be restarted.
 
-**Raises:** `NiTraceError` if tracing was not active.
+**Raises:** `IOTraceError` if tracing was not active.
 
 ---
 
@@ -154,7 +154,7 @@ Write a custom text entry into the active trace log. Useful for inserting marker
 |---|---|---|
 | `message` | `str` | The text to write. |
 
-**Raises:** `NiTraceError` if the IO Trace application has been closed.
+**Raises:** `IOTraceError` if the IO Trace application has been closed.
 
 ---
 
@@ -166,7 +166,7 @@ Close the NI IO Trace application and wait for the process to exit. The applicat
 |---|---|---|---|
 | `timeout` | `float` | `10.0` | Maximum seconds to wait for the process to exit. |
 
-**Raises:** `NiTraceError` if the close command fails. `RuntimeError` if the process does not exit within the timeout.
+**Raises:** `IOTraceError` if the close command fails. `RuntimeError` if the process does not exit within the timeout.
 
 ### Enums
 
@@ -184,7 +184,7 @@ Close the NI IO Trace application and wait for the process to exit. The applicat
 
 | Member | Value | Description |
 |---|---|---|
-| `CREATE_ONLY` | 0 | Create a new file. Raises `NiTraceError` if the file exists. |
+| `CREATE_ONLY` | 0 | Create a new file. Raises `IOTraceError` if the file exists. |
 | `CREATE_OR_APPEND` | 1 | Append to an existing file or create a new one. |
 | `CREATE_OR_OVERWRITE` | 2 | Overwrite an existing file or create a new one. |
 
@@ -217,11 +217,11 @@ Close the NI IO Trace application and wait for the process to exit. The applicat
 
 #### `IOTraceHandler`
 
-`nitrace.logging.IOTraceHandler` is a [`logging.Handler`](https://docs.python.org/3/library/logging.html#handler-objects) subclass that forwards Python log records into the NI IO Trace log via `log_message`. If the IO Trace application is not running, the error is passed to `handleError`.
+`iotrace.logging.IOTraceHandler` is a [`logging.Handler`](https://docs.python.org/3/library/logging.html#handler-objects) subclass that forwards Python log records into the NI IO Trace log via `log_message`. If the IO Trace application is not running, the error is passed to `handleError`.
 
 ```python
 import logging
-from nitrace.logging import IOTraceHandler
+from iotrace.logging import IOTraceHandler
 
 logger = logging.getLogger("my_app")
 handler = IOTraceHandler()
@@ -233,7 +233,7 @@ See [`examples/logging_handler.py`](examples/logging_handler.py) for a complete 
 
 ### Exceptions
 
-#### `NiTraceError`
+#### `IOTraceError`
 
 Raised when an API call returns a non-success status.
 

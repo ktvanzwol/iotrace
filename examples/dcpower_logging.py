@@ -3,8 +3,8 @@ from pathlib import Path
 import hightime
 import nidcpower
 
-import nitrace
-from nitrace import FileWriteMode, LogFileSetting
+import iotrace
+from iotrace import FileWriteMode, LogFileSetting
 
 # This example demonstrates how to use NI Trace to log NI-DCPower driver calls to a NI Trace log file.
 log_file_setting = LogFileSetting.IO_TRACE
@@ -32,24 +32,24 @@ def main():
         session.measure_when = nidcpower.MeasureWhen.AUTOMATICALLY_AFTER_SOURCE_COMPLETE
         session.voltage_level = voltage1
 
-        nitrace.log_message("[Python] NI-DCPower session configured. Starting measurements...")
+        iotrace.log_message("[Python] NI-DCPower session configured. Starting measurements...")
         with session.initiate():
             channel_indices = f"0-{session.channel_count - 1}"
             channels = session.get_channel_names(channel_indices)
             for channel_name in channels:
-                nitrace.log_message(f"[Python] Starting measurements for voltage {voltage1} on channel {channel_name}")
+                iotrace.log_message(f"[Python] Starting measurements for voltage {voltage1} on channel {channel_name}")
                 print(f"Channel: {channel_name}")
                 print("---------------------------------")
                 print("Voltage 1:")
                 print_fetched_measurements(session.channels[channel_name].fetch_multiple(count=1, timeout=timeout))
                 session.voltage_level = voltage2  # on-the-fly set
-                nitrace.log_message(f"[Python] Starting measurements for voltage {voltage2} on channel {channel_name}")
+                iotrace.log_message(f"[Python] Starting measurements for voltage {voltage2} on channel {channel_name}")
                 print("Voltage 2:")
                 print_fetched_measurements(session.channels[channel_name].fetch_multiple(count=1, timeout=timeout))
                 session.output_enabled = False
                 print("")
 
-        nitrace.log_message("[Python] NI-DCPower session completed.")
+        iotrace.log_message("[Python] NI-DCPower session completed.")
 
 
 def print_fetched_measurements(measurements):
@@ -59,8 +59,8 @@ def print_fetched_measurements(measurements):
 
 
 if __name__ == "__main__":
-    nitrace.launch_io_trace()
-    nitrace.start_tracing(
+    iotrace.launch_io_trace()
+    iotrace.start_tracing(
         log_file_setting=log_file_setting,
         file_path=file_path,
         file_write_mode=FileWriteMode.CREATE_OR_OVERWRITE,
@@ -68,8 +68,8 @@ if __name__ == "__main__":
 
     main()
 
-    nitrace.stop_tracing()
+    iotrace.stop_tracing()
     print("Trace complete. Log file saved to:", file_path)
 
     # Optionally, close the NI Trace application if you are done inspecting the log.
-    # nitrace.close_io_trace()
+    # iotrace.close_io_trace()

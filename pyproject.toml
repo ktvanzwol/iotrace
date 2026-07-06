@@ -1,5 +1,5 @@
 [project]
-name = "nitrace"
+name = "iotrace"
 version = "0.1.0"
 description = "Python wrapper for NI IO Trace programmatic C API"
 readme = "README.md"
@@ -9,7 +9,7 @@ authors = [
 requires-python = ">=3.10"
 license = "MIT"
 dependencies = []
-keywords = ["ni", "io-trace", "nitrace", "ni-io-trace", "nimi-python", "nidcpower", "nidmm", "niscope", "niswitch", "nidigital", "nidaqmx", "nifgen", "nirfsa", "nirfsg", "nise", "ni-visa", "pyVISA"]
+keywords = ["ni", "io-trace", "iotrace", "nitrace", "ni-io-trace", "nimi-python", "nidcpower", "nidmm", "niscope", "niswitch", "nidigital", "nidaqmx", "nifgen", "nirfsa", "nirfsg", "nise", "ni-visa", "pyVISA"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
@@ -37,7 +37,7 @@ requires = ["uv_build>=0.11.6,<0.12.0"]
 build-backend = "uv_build"
 
 [project.scripts]
-nitrace = "nitrace.__cli__:main"
+iotrace = "iotrace.__cli__:main"
 
 [dependency-groups]
 dev = [
@@ -60,7 +60,7 @@ markers = [
 select = ["E", "F", "I"]
 
 [tool.coverage.run]
-source = ["nitrace"]
+source = ["iotrace"]
 
 [tool.coverage.report]
 omit = ["tests/*"]

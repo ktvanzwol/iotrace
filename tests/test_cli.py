@@ -2,18 +2,18 @@ from unittest.mock import patch
 
 import pytest
 
-import nitrace.__cli__ as cli
-from nitrace import FileWriteMode, LogFileSetting, NiTraceError, StatusCode
+import iotrace.__cli__ as cli
+from iotrace import FileWriteMode, LogFileSetting, IOTraceError, StatusCode
 
 
 @pytest.fixture()
 def mock_api():
-    """Patch all nitrace API functions used by the CLI."""
+    """Patch all iotrace API functions used by the CLI."""
     with (
-        patch("nitrace.launch_io_trace") as launch,
-        patch("nitrace.start_tracing") as start,
-        patch("nitrace.stop_tracing") as stop,
-        patch("nitrace.close_io_trace") as close,
+        patch("iotrace.launch_io_trace") as launch,
+        patch("iotrace.start_tracing") as start,
+        patch("iotrace.stop_tracing") as stop,
+        patch("iotrace.close_io_trace") as close,
     ):
         yield {
             "launch": launch,
@@ -62,7 +62,7 @@ class TestCLIStop:
 
 class TestCLIErrorHandling:
     def test_api_error_exits(self, mock_api, capsys):
-        mock_api["stop"].side_effect = NiTraceError(StatusCode.FAILED_INCOMPATIBLE_STATE)
+        mock_api["stop"].side_effect = IOTraceError(StatusCode.FAILED_INCOMPATIBLE_STATE)
         with pytest.raises(SystemExit, match="1"):
             cli.main(["stop"])
         assert "Error" in capsys.readouterr().err

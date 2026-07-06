@@ -9,11 +9,11 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-import nitrace
-from nitrace import (
+import iotrace
+from iotrace import (
     FileWriteMode,
     LogFileSetting,
-    NiTraceError,
+    IOTraceError,
     StatusCode,
     WindowState,
     _check,
@@ -96,19 +96,19 @@ class TestStatusCode:
             StatusCode(999)
 
 
-# -- NiTraceError ------------------------------------------------------------
+# -- IOTraceError ------------------------------------------------------------
 
 
-class TestNiTraceError:
+class TestIOTraceError:
     def test_is_exception(self):
-        assert issubclass(NiTraceError, Exception)
+        assert issubclass(IOTraceError, Exception)
 
     def test_stores_status(self):
-        err = NiTraceError(StatusCode.FAILED_GUI_CLOSED)
+        err = IOTraceError(StatusCode.FAILED_GUI_CLOSED)
         assert err.status is StatusCode.FAILED_GUI_CLOSED
 
     def test_message_contains_name_and_value(self):
-        err = NiTraceError(StatusCode.FAILED_BAD_PARAMETER)
+        err = IOTraceError(StatusCode.FAILED_BAD_PARAMETER)
         msg = str(err)
         assert "FAILED_BAD_PARAMETER" in msg
         assert "-303205" in msg
@@ -117,7 +117,7 @@ class TestNiTraceError:
     def test_all_status_codes_produce_valid_error(self, status):
         if status is StatusCode.SUCCESS:
             pytest.skip("SUCCESS is not an error")
-        err = NiTraceError(status)
+        err = IOTraceError(status)
         assert err.status is status
         assert status.name in str(err)
 
@@ -145,7 +145,7 @@ class TestCheck:
         ],
     )
     def test_error_codes_raise(self, code, expected_status):
-        with pytest.raises(NiTraceError) as exc_info:
+        with pytest.raises(IOTraceError) as exc_info:
             _check(code)
         assert exc_info.value.status == expected_status
         assert expected_status.name in str(exc_info.value)
@@ -168,7 +168,7 @@ def mock_dll():
     dll.nispy_WriteTextEntry.return_value = 0
     dll.nispy_CloseSpy.return_value = 0
 
-    with patch("nitrace._get_dll", return_value=dll):
+    with patch("iotrace._get_dll", return_value=dll):
         yield dll
 
 
@@ -184,14 +184,14 @@ class TestGetApplicationPath:
 
         mock_dll.nispy_GetApplicationPath.side_effect = fake_get_path
 
-        result = nitrace.get_application_path()
+        result = iotrace.get_application_path()
         assert isinstance(result, Path)
         assert result == Path("C:\\Program Files\\NI IO Trace\\NIIOTrace.exe")
 
     def test_raises_on_error(self, mock_dll):
         mock_dll.nispy_GetApplicationPath.return_value = StatusCode.FAILED_NO_EXECUTE
-        with pytest.raises(NiTraceError) as exc_info:
-            nitrace.get_application_path()
+        with pytest.raises(IOTraceError) as exc_info:
+            iotrace.get_application_path()
         assert exc_info.value.status == StatusCode.FAILED_NO_EXECUTE
 
 
@@ -200,11 +200,11 @@ class TestGetApplicationPath:
 
 class TestStartTracing:
     def test_defaults(self, mock_dll):
-        nitrace.start_tracing()
+        iotrace.start_tracing()
         mock_dll.nispy_StartSpying.assert_called_once_with(-1, None, 0)
 
     def test_with_file(self, mock_dll):
-        nitrace.start_tracing(
+        iotrace.start_tracing(
             log_file_setting=LogFileSetting.PLAIN_TEXT,
             file_path="trace.txt",
             file_write_mode=FileWriteMode.CREATE_OR_OVERWRITE,
@@ -212,7 +212,7 @@ class TestStartTracing:
         mock_dll.nispy_StartSpying.assert_called_once_with(1, b"trace.txt", 2)
 
     def test_with_path_object(self, mock_dll):
-        nitrace.start_tracing(
+        iotrace.start_tracing(
             log_file_setting=LogFileSetting.XML,
             file_path=Path("output/trace.xml"),
             file_write_mode=FileWriteMode.CREATE_ONLY,
@@ -224,8 +224,8 @@ class TestStartTracing:
 
     def test_raises_on_error(self, mock_dll):
         mock_dll.nispy_StartSpying.return_value = StatusCode.FAILED_INCOMPATIBLE_STATE
-        with pytest.raises(NiTraceError) as exc_info:
-            nitrace.start_tracing()
+        with pytest.raises(IOTraceError) as exc_info:
+            iotrace.start_tracing()
         assert exc_info.value.status == StatusCode.FAILED_INCOMPATIBLE_STATE
 
 
@@ -234,13 +234,13 @@ class TestStartTracing:
 
 class TestStopTracing:
     def test_success(self, mock_dll):
-        nitrace.stop_tracing()
+        iotrace.stop_tracing()
         mock_dll.nispy_StopSpying.assert_called_once()
 
     def test_raises_on_error(self, mock_dll):
         mock_dll.nispy_StopSpying.return_value = StatusCode.FAILED_INCOMPATIBLE_STATE
-        with pytest.raises(NiTraceError) as exc_info:
-            nitrace.stop_tracing()
+        with pytest.raises(IOTraceError) as exc_info:
+            iotrace.stop_tracing()
         assert exc_info.value.status == StatusCode.FAILED_INCOMPATIBLE_STATE
 
 
@@ -249,17 +249,17 @@ class TestStopTracing:
 
 class TestLogMessage:
     def test_encodes_and_sends(self, mock_dll):
-        nitrace.log_message("hello world")
+        iotrace.log_message("hello world")
         mock_dll.nispy_WriteTextEntry.assert_called_once_with(b"hello world")
 
     def test_utf8_encoding(self, mock_dll):
-        nitrace.log_message("café ☕")
+        iotrace.log_message("café ☕")
         mock_dll.nispy_WriteTextEntry.assert_called_once_with("café ☕".encode())
 
     def test_raises_on_error(self, mock_dll):
         mock_dll.nispy_WriteTextEntry.return_value = StatusCode.FAILED_GUI_CLOSED
-        with pytest.raises(NiTraceError) as exc_info:
-            nitrace.log_message("msg")
+        with pytest.raises(IOTraceError) as exc_info:
+            iotrace.log_message("msg")
         assert exc_info.value.status == StatusCode.FAILED_GUI_CLOSED
 
 
@@ -274,8 +274,8 @@ class TestCloseIoTrace:
 
         mock_dll.nispy_GetApplicationPath.side_effect = fake_get_path
 
-        with patch("nitrace._wait_for_process_exit") as mock_wait:
-            nitrace.close_io_trace()
+        with patch("iotrace._wait_for_process_exit") as mock_wait:
+            iotrace.close_io_trace()
             mock_dll.nispy_CloseSpy.assert_called_once()
             mock_wait.assert_called_once_with("NIIOTrace.exe", 10.0)
 
@@ -286,8 +286,8 @@ class TestCloseIoTrace:
 
         mock_dll.nispy_GetApplicationPath.side_effect = fake_get_path
 
-        with patch("nitrace._wait_for_process_exit") as mock_wait:
-            nitrace.close_io_trace(timeout=5.0)
+        with patch("iotrace._wait_for_process_exit") as mock_wait:
+            iotrace.close_io_trace(timeout=5.0)
             mock_wait.assert_called_once_with("NIIOTrace.exe", 5.0)
 
     def test_raises_on_error(self, mock_dll):
@@ -298,8 +298,8 @@ class TestCloseIoTrace:
         mock_dll.nispy_GetApplicationPath.side_effect = fake_get_path
         mock_dll.nispy_CloseSpy.return_value = StatusCode.FAILED_INCOMPATIBLE_STATE
 
-        with pytest.raises(NiTraceError) as exc_info:
-            nitrace.close_io_trace()
+        with pytest.raises(IOTraceError) as exc_info:
+            iotrace.close_io_trace()
         assert exc_info.value.status == StatusCode.FAILED_INCOMPATIBLE_STATE
 
 
@@ -316,8 +316,8 @@ class TestLaunchIoTrace:
         mock_process = MagicMock()
         mock_process.poll.return_value = None
 
-        with patch("nitrace.subprocess.Popen", return_value=mock_process) as mock_popen:
-            result = nitrace.launch_io_trace()
+        with patch("iotrace.subprocess.Popen", return_value=mock_process) as mock_popen:
+            result = iotrace.launch_io_trace()
 
         assert result is mock_process
         mock_popen.assert_called_once_with(["C:\\NIIOTrace.exe", "/minimized"])
@@ -342,8 +342,8 @@ class TestLaunchIoTrace:
         mock_process = MagicMock()
         mock_process.poll.return_value = None
 
-        with patch("nitrace.subprocess.Popen", return_value=mock_process) as mock_popen:
-            nitrace.launch_io_trace(window_state=state)
+        with patch("iotrace.subprocess.Popen", return_value=mock_process) as mock_popen:
+            iotrace.launch_io_trace(window_state=state)
 
         mock_popen.assert_called_once_with(["C:\\NIIOTrace.exe", *expected_args])
 
@@ -357,9 +357,9 @@ class TestLaunchIoTrace:
         mock_process.poll.return_value = 1
         mock_process.returncode = 1
 
-        with patch("nitrace.subprocess.Popen", return_value=mock_process):
+        with patch("iotrace.subprocess.Popen", return_value=mock_process):
             with pytest.raises(RuntimeError, match="exited immediately"):
-                nitrace.launch_io_trace()
+                iotrace.launch_io_trace()
 
     def test_raises_if_app_never_responds(self, mock_dll):
         def fake_get_path(buf, size):
@@ -372,11 +372,11 @@ class TestLaunchIoTrace:
         mock_process.poll.return_value = None
 
         with (
-            patch("nitrace.subprocess.Popen", return_value=mock_process),
-            patch("nitrace.time.sleep"),
+            patch("iotrace.subprocess.Popen", return_value=mock_process),
+            patch("iotrace.time.sleep"),
         ):
             with pytest.raises(RuntimeError, match="failed to respond"):
-                nitrace.launch_io_trace()
+                iotrace.launch_io_trace()
 
 
 # -- _find_process_ids -------------------------------------------------------
@@ -387,23 +387,23 @@ class TestFindProcessIds:
         fake_output = (
             '"NIIOTrace.exe","1234","Console","1","12,340 K"\n"NIIOTrace.exe","5678","Console","1","8,192 K"\n'
         )
-        with patch("nitrace.subprocess.run") as mock_run:
+        with patch("iotrace.subprocess.run") as mock_run:
             mock_run.return_value = MagicMock(stdout=fake_output)
-            pids = nitrace._find_process_ids("NIIOTrace.exe")
+            pids = iotrace._find_process_ids("NIIOTrace.exe")
         assert pids == [1234, 5678]
 
     def test_no_matching_processes(self):
         fake_output = "INFO: No tasks are running which match the specified criteria.\n"
-        with patch("nitrace.subprocess.run") as mock_run:
+        with patch("iotrace.subprocess.run") as mock_run:
             mock_run.return_value = MagicMock(stdout=fake_output)
-            pids = nitrace._find_process_ids("NIIOTrace.exe")
+            pids = iotrace._find_process_ids("NIIOTrace.exe")
         assert pids == []
 
     def test_case_insensitive_match(self):
         fake_output = '"niiotrace.exe","1234","Console","1","12,340 K"\n'
-        with patch("nitrace.subprocess.run") as mock_run:
+        with patch("iotrace.subprocess.run") as mock_run:
             mock_run.return_value = MagicMock(stdout=fake_output)
-            pids = nitrace._find_process_ids("NIIOTrace.exe")
+            pids = iotrace._find_process_ids("NIIOTrace.exe")
         assert pids == [1234]
 
 
@@ -412,14 +412,14 @@ class TestFindProcessIds:
 
 class TestWaitForProcessExit:
     def test_returns_when_process_exits(self):
-        with patch("nitrace._find_process_ids", side_effect=[[1234], []]), patch("nitrace.time.sleep"):
-            nitrace._wait_for_process_exit("NIIOTrace.exe", timeout=5.0)
+        with patch("iotrace._find_process_ids", side_effect=[[1234], []]), patch("iotrace.time.sleep"):
+            iotrace._wait_for_process_exit("NIIOTrace.exe", timeout=5.0)
 
     def test_raises_on_timeout(self):
         with (
-            patch("nitrace._find_process_ids", return_value=[1234]),
-            patch("nitrace.time.monotonic", side_effect=[0.0, 0.0, 6.0]),
-            patch("nitrace.time.sleep"),
+            patch("iotrace._find_process_ids", return_value=[1234]),
+            patch("iotrace.time.monotonic", side_effect=[0.0, 0.0, 6.0]),
+            patch("iotrace.time.sleep"),
         ):
             with pytest.raises(RuntimeError, match="did not exit"):
-                nitrace._wait_for_process_exit("NIIOTrace.exe", timeout=5.0)
+                iotrace._wait_for_process_exit("NIIOTrace.exe", timeout=5.0)
