@@ -26,7 +26,7 @@ uv add iotrace
 Or install directly from GitHub:
 
 ```
-pip install git+https://github.com/ktvanzwol/nitrace.git
+pip install git+https://github.com/ktvanzwol/iotrace.git
 ```
 
 ## Quick Start

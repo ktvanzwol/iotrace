@@ -1,8 +1,8 @@
 # Contributing to iotrace
 
-Contributions to [iotrace](https://github.com/ktvanzwol/nitrace) are welcome from all!
+Contributions to [iotrace](https://github.com/ktvanzwol/iotrace) are welcome from all!
 
-iotrace is managed via [Git](https://git-scm.com), with the canonical upstream repository hosted on [GitHub](https://github.com/ktvanzwol/nitrace).
+iotrace is managed via [Git](https://git-scm.com), with the canonical upstream repository hosted on [GitHub](https://github.com/ktvanzwol/iotrace).
 
 iotrace follows a pull request model for development. If you wish to contribute, you will need to create a GitHub account, fork this project, push a branch with your changes to your project, and then submit a pull request.
 
@@ -22,8 +22,8 @@ See [GitHub's official documentation](https://help.github.com/articles/using-pul
 Clone the repository and install dependencies using [uv](https://docs.astral.sh/uv/):
 
 ```
-git clone https://github.com/ktvanzwol/nitrace.git
-cd nitrace
+git clone https://github.com/ktvanzwol/iotrace.git
+cd iotrace
 uv sync
 ```
 
@@ -113,4 +113,4 @@ If the build succeeds, artifacts will be placed in `dist/`.
 
 (taken from [developercertificate.org](https://developercertificate.org/))
 
-See [LICENSE](https://github.com/ktvanzwol/nitrace/blob/main/LICENSE) for details about how iotrace is licensed.
+See [LICENSE](https://github.com/ktvanzwol/iotrace/blob/main/LICENSE) for details about how iotrace is licensed.
