@@ -12,8 +12,8 @@ import pytest
 import iotrace
 from iotrace import (
     FileWriteMode,
-    LogFileSetting,
     IOTraceError,
+    LogFileSetting,
     StatusCode,
     WindowState,
     _check,

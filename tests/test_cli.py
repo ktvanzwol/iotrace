@@ -3,7 +3,7 @@ from unittest.mock import patch
 import pytest
 
 import iotrace.__cli__ as cli
-from iotrace import FileWriteMode, LogFileSetting, IOTraceError, StatusCode
+from iotrace import FileWriteMode, IOTraceError, LogFileSetting, StatusCode
 
 
 @pytest.fixture()
