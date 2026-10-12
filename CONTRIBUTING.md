@@ -13,7 +13,7 @@ See [GitHub's official documentation](https://help.github.com/articles/using-pul
 ## Prerequisites
 
 - Windows
-- [Python 3.10+](https://www.python.org/downloads/)
+- [Python 3.11+](https://www.python.org/downloads/)
 - [uv](https://docs.astral.sh/uv/) (recommended package manager)
 - [NI IO Trace](https://www.ni.com/docs/en-US/bundle/ni-io-trace/page/overview.html) installed (required for system tests)
 

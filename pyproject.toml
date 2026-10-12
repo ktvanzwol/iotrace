@@ -6,7 +6,7 @@ readme = "README.md"
 authors = [
     { name = "Karsten van Zwol", email = "karsten.van.zwol@gmail.com" }
 ]
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 license = "MIT"
 dependencies = []
 keywords = ["ni", "io-trace", "iotrace", "nitrace", "ni-io-trace", "nimi-python", "nidcpower", "nidmm", "niscope", "niswitch", "nidigital", "nidaqmx", "nifgen", "nirfsa", "nirfsg", "nise", "ni-visa", "pyVISA"]
@@ -16,11 +16,11 @@ classifiers = [
     "Intended Audience :: Science/Research",
     "Operating System :: Microsoft :: Windows",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
     "Topic :: Scientific/Engineering",
     "Topic :: Software Development :: Testing",
     "Topic :: System :: Logging",
