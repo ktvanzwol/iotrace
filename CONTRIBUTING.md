@@ -8,20 +8,20 @@ iotrace follows a pull request model for development. If you wish to contribute,
 
 See [GitHub's official documentation](https://help.github.com/articles/using-pull-requests/) for more details.
 
-# Getting Started
+## Getting Started
 
-## Prerequisites
+### Prerequisites
 
 - Windows
 - [Python 3.11+](https://www.python.org/downloads/)
 - [uv](https://docs.astral.sh/uv/) (recommended package manager)
 - [NI IO Trace](https://www.ni.com/docs/en-US/bundle/ni-io-trace/page/overview.html) installed (required for system tests)
 
-## Environment Setup
+### Environment Setup
 
 Clone the repository and install dependencies using [uv](https://docs.astral.sh/uv/):
 
-```
+``` shell
 git clone https://github.com/ktvanzwol/iotrace.git
 cd iotrace
 uv sync
@@ -29,61 +29,61 @@ uv sync
 
 This will create a virtual environment and install all development dependencies.
 
-## Code Formatting
+### Code Formatting
 
 iotrace uses [ruff](https://docs.astral.sh/ruff/) for formatting. To format the entire project, run:
 
-```
+``` shell
 uv run ruff format
 ```
 
-## Linting
+### Linting
 
 iotrace uses [ruff](https://docs.astral.sh/ruff/) for linting. To lint the entire project, run:
 
-```
+``` shell
 uv run ruff check
 ```
 
 To automatically fix lint issues where possible:
 
-```
+``` shell
 uv run ruff check --fix
 ```
 
-## Testing
+### Testing
 
 iotrace uses [pytest](https://docs.pytest.org/) to run tests. To run the unit tests:
 
-```
+``` shell
 uv run pytest
 ```
 
 To run tests with coverage:
 
-```
+``` shell
 uv run pytest --cov
 ```
 
-### System Tests
+#### System Tests
 
 Some tests require NI IO Trace to be installed on the machine. These are marked with the `system` marker and are skipped by default. To include system tests, pass the `--system` flag:
 
-```
+``` shell
 uv run pytest --system
 ```
 
-## Building
+### Building
 
 To build the project:
 
-```
+``` shell
 uv build
 ```
 
 If the build succeeds, artifacts will be placed in `dist/`.
 
-# Developer Certificate of Origin (DCO)
+## Developer Certificate of Origin (DCO)
 
    Developer's Certificate of Origin 1.1
 
