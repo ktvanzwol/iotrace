@@ -83,6 +83,50 @@ uv build
 
 If the build succeeds, artifacts will be placed in `dist/`.
 
+### Releasing
+
+Releases are triggered by pushing a version tag such as `v0.1.2`. The tag must
+match the version in `pyproject.toml`. The release workflow runs lint and unit
+tests on Windows, builds a wheel and source archive, publishes those artifacts
+to PyPI, then creates a GitHub release with generated notes and the same files
+attached. System tests are not run.
+
+#### One-Time Setup
+
+1. Create a GitHub environment named `pypi` in this repository's settings.
+    Optionally require approval before deployments to this environment.
+2. Configure a GitHub Trusted Publisher in the PyPI project's publishing settings:
+    - Owner: `ktvanzwol`
+    - Repository: `iotrace`
+    - Workflow filename: `release.yml`
+    - Environment: `pypi`
+
+If the project does not yet exist on PyPI, configure a pending publisher for
+`iotrace` instead. Trusted Publishing uses GitHub's short-lived identity tokens;
+no PyPI API token or repository secret is required.
+
+#### Create a Release
+
+Choose a version that has not already been published to PyPI. For example:
+
+``` shell
+uv version 0.1.2
+uv lock
+git add pyproject.toml uv.lock
+git commit -m "Release v0.1.2"
+git push origin master
+git tag v0.1.2
+git push origin v0.1.2
+```
+
+Wait for branch CI to pass before pushing the tag. You can also edit the version
+in `pyproject.toml` manually and run `uv lock` before committing. Monitor the
+Release workflow in GitHub Actions, including any environment approval request.
+
+PyPI versions cannot be overwritten. If publishing succeeds but GitHub release
+creation fails, rerun only the failed job from GitHub Actions after resolving
+the problem; do not rerun the publishing job or delete and recreate the tag.
+
 ## Developer Certificate of Origin (DCO)
 
    Developer's Certificate of Origin 1.1
