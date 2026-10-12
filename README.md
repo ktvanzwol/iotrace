@@ -5,7 +5,7 @@ A Python library for controlling [NI IO Trace](https://www.ni.com/docs/en-US/bun
 ## Requirements
 
 - Windows
-- Python 3.10+
+- Python 3.11+
 - NI IO Trace installed (part of NI software distributions)
   - [Where Can I Download NI I/O Trace?](https://knowledge.ni.com/KnowledgeArticleDetails?id=kA00Z000000kJcQSAU)
 
@@ -13,19 +13,19 @@ A Python library for controlling [NI IO Trace](https://www.ni.com/docs/en-US/bun
 
 Install from PyPI:
 
-```
+``` shell
 pip install iotrace
 ```
 
 Or with [uv](https://docs.astral.sh/uv/):
 
-```
+``` shell
 uv add iotrace
 ```
 
 Or install directly from GitHub:
 
-```
+``` shell
 pip install git+https://github.com/ktvanzwol/iotrace.git
 ```
 
@@ -61,7 +61,7 @@ print("Trace complete. Log file saved to:", Path.cwd() / "trace.nitrace")
 
 A command-line interface is included:
 
-```
+``` shell
 # Launch IO Trace and start tracing to a CSV file
 iotrace start --log-format csv --file trace.csv --write-mode overwrite
 
@@ -72,7 +72,7 @@ iotrace stop --close
 ### `iotrace start`
 
 | Option | Description |
-|---|---|
+| --- | --- |
 | `--log-format` | Log file format: `none`, `io-trace`, `plain-text`, `csv`, `xml` (default: `none`). |
 | `--file` | Path to the log file. |
 | `--write-mode` | File write mode: `create`, `append`, `overwrite` (default: `create`). |
@@ -80,7 +80,7 @@ iotrace stop --close
 ### `iotrace stop`
 
 | Option | Description |
-|---|---|
+| --- | --- |
 | `--close` | Close NI IO Trace after stopping. |
 
 ## API Reference
@@ -117,7 +117,7 @@ Return the filesystem path to the NI IO Trace executable.
 Launch the NI IO Trace application and return the process handle. The application must be running before calling `start_tracing`, `stop_tracing`, `log_message`, or `close_io_trace`.
 
 | Parameter | Type | Default | Description |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `window_state` | `WindowState` | `MINIMIZED` | Initial window state of the application. |
 
 **Raises:** `RuntimeError` if the process exits immediately. `IOTraceError` if the application path cannot be resolved.
@@ -129,7 +129,7 @@ Launch the NI IO Trace application and return the process handle. The applicatio
 Start tracing NI driver calls. NI IO Trace must already be running.
 
 | Parameter | Type | Default | Description |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `log_file_setting` | `LogFileSetting` | `NO_FILE` | Format of the log file. |
 | `file_path` | `str \| Path \| None` | `None` | Path to the log file. Required when `log_file_setting` is not `NO_FILE`. |
 | `file_write_mode` | `FileWriteMode` | `CREATE_ONLY` | How to handle an existing file. |
@@ -151,7 +151,7 @@ Stop tracing NI driver calls. The application remains open and tracing can be re
 Write a custom text entry into the active trace log. Useful for inserting markers to correlate driver calls with application events.
 
 | Parameter | Type | Description |
-|---|---|---|
+| --- | --- | --- |
 | `message` | `str` | The text to write. |
 
 **Raises:** `IOTraceError` if the IO Trace application has been closed.
@@ -163,7 +163,7 @@ Write a custom text entry into the active trace log. Useful for inserting marker
 Close the NI IO Trace application and wait for the process to exit. The application does not need to have been launched by `launch_io_trace` — it may have been started manually.
 
 | Parameter | Type | Default | Description |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `timeout` | `float` | `10.0` | Maximum seconds to wait for the process to exit. |
 
 **Raises:** `IOTraceError` if the close command fails. `RuntimeError` if the process does not exit within the timeout.
@@ -173,7 +173,7 @@ Close the NI IO Trace application and wait for the process to exit. The applicat
 #### `LogFileSetting`
 
 | Member | Value | Description |
-|---|---|---|
+| --- | --- | --- |
 | `NO_FILE` | -1 | No log file; trace data visible only in the GUI. |
 | `IO_TRACE` | 0 | NI IO Trace binary format (`.iotrace`). |
 | `PLAIN_TEXT` | 1 | Human-readable plain-text file. |
@@ -183,7 +183,7 @@ Close the NI IO Trace application and wait for the process to exit. The applicat
 #### `FileWriteMode`
 
 | Member | Value | Description |
-|---|---|---|
+| --- | --- | --- |
 | `CREATE_ONLY` | 0 | Create a new file. Raises `IOTraceError` if the file exists. |
 | `CREATE_OR_APPEND` | 1 | Append to an existing file or create a new one. |
 | `CREATE_OR_OVERWRITE` | 2 | Overwrite an existing file or create a new one. |
@@ -191,7 +191,7 @@ Close the NI IO Trace application and wait for the process to exit. The applicat
 #### `WindowState`
 
 | Member | Value | Description |
-|---|---|---|
+| --- | --- | --- |
 | `HIDDEN` | 0 | No visible window. |
 | `NORMAL` | 1 | Default (restored) window state. |
 | `MAXIMIZED` | 2 | Window maximized. |
@@ -200,7 +200,7 @@ Close the NI IO Trace application and wait for the process to exit. The applicat
 #### `StatusCode`
 
 | Member | Value | Description |
-|---|---|---|
+| --- | --- | --- |
 | `SUCCESS` | 0 | Call completed successfully. |
 | `FAILED_NO_EXECUTE` | -303200 | Command could not be executed. |
 | `FAILED_INCOMPATIBLE_STATE` | -303201 | Operation not valid in the current state. |
@@ -238,7 +238,7 @@ See [`examples/logging_handler.py`](examples/logging_handler.py) for a complete 
 Raised when an API call returns a non-success status.
 
 | Attribute | Type | Description |
-|---|---|---|
+| --- | --- | --- |
 | `status` | `StatusCode` | The status code that triggered the error. |
 
 ## License
